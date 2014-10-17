@@ -78,8 +78,13 @@ var server = http.createServer(function (request, response) {
     }
 
     response.statusCode = entry.response.status;
-    var content = entry.response.content.text.replace("scproxy-stage.adobecc.com", "localhost:" + PORT);
-    content = content.replace("https://localhost", "http://localhost");
+    var content = entry.response.content.text;
+    if (/^image\//.test(entry.response.content.mimeType)) {
+        content = new Buffer(content, 'base64');
+    } else {
+        content = content.replace("scproxy-stage.adobecc.com", "localhost:" + PORT);
+        content = content.replace("https://localhost", "http://localhost");
+    }
     response.end(content);
 });
 
