@@ -31,9 +31,22 @@ var server = http.createServer(function (request, response) {
     }
 
     for (var h = 0; h < entry.response.headers.length; h++) {
-        if (entry.response.headers[h].name.toLowerCase() == "content-length") continue;
-        if (entry.response.headers[h].name.toLowerCase() == "content-encoding") continue;
-        response.setHeader(entry.response.headers[h].name, entry.response.headers[h].value);
+        var name = entry.response.headers[h].name;
+        var value = entry.response.headers[h].value;
+
+        if (name.toLowerCase() == "content-length") continue;
+        if (name.toLowerCase() == "content-encoding") continue;
+
+        var existing = response.getHeader(name);
+        if (existing) {
+            if (Array.isArray(existing)) {
+                response.setHeader(name, existing.concat(value));
+            } else {
+                response.setHeader(name, [existing, value]);
+            }
+        } else {
+            response.setHeader(name, value);
+        }
     }
 
     response.statusCode = entry.response.status;
@@ -42,6 +55,7 @@ var server = http.createServer(function (request, response) {
 
 server.listen(PORT);
 console.log("Listening at http://localhost:" + PORT);
+console.log("Try http://localhost:" + PORT+ URL.parse(entries[0].request.url).path);
 
 function indexHar(har) {
 
