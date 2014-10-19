@@ -1,6 +1,7 @@
 var fs = require("fs");
 var http = require("http");
 var URL = require("url");
+var heuristic = require("./heuristic");
 
 var PORT = "8080";
 
@@ -12,18 +13,11 @@ var entries = har.log.entries;
 
 var server = http.createServer(function (request, response) {
     request.parsedUrl = URL.parse(request.url, true);
-    var entry;
-    for (var i = 0; i < entries.length; i++) {
-        entry = entries[i];
-        if (!entry.request.parsedUrl) {
-            entry.request.parsedUrl = URL.parse(entry.request.url, true);
-        }
-        if (config.match(request, entry.request) === true) {
-            break;
-        }
-    }
 
-    if (i === entries.length) {
+
+    var entry = heuristic(entries, request);
+
+    if (!entry) {
         console.log("Not found:", request.url);
         // console.log(request.headers);
         response.writeHead(404, "Not found", {"content-type": "text/plain"});
