@@ -5,39 +5,20 @@ var URL = require("url");
 var PORT = "8080";
 
 var harPath = process.argv[2];
+var configPath = process.argv[3];
 var har = JSON.parse(fs.readFileSync(harPath));
+var config = require(configPath);
 var entries = har.log.entries;
 
 var server = http.createServer(function (request, response) {
+    request.parsedUrl = URL.parse(request.url, true);
     var entry;
-    var url = URL.parse(request.url, true);
     for (var i = 0; i < entries.length; i++) {
         entry = entries[i];
-        var entryUrl = URL.parse(entry.request.url, true);
-        if (
-            request.method === entry.request.method &&
-            url.pathname === entryUrl.pathname
-        ) {
-            if (/^\/api/.test(url.pathname)) {
-                if (
-                    url.query.q === entryUrl.query.q &&
-                    url.query["X-Location"] === entryUrl.query["X-Location"]
-                ) {
-                    if (request.headers["x-location"]) {
-                        if (entry.request.headers.some(function (header) {
-                            return header.name.toLowerCase() === "x-location" && header.value === request.headers["x-location"];
-                        })) {
-                            break;
-                        } else {
-                            continue;
-                        }
-                    }
-                    console.log(request.url, "->", entry.request.url);
-                    break;
-                } else {
-                    continue;
-                }
-            }
+        if (!entry.request.parsedUrl) {
+            entry.request.parsedUrl = URL.parse(entry.request.url, true);
+        }
+        if (config.match(request, entry.request) === true) {
             break;
         }
     }
@@ -78,19 +59,19 @@ var server = http.createServer(function (request, response) {
     }
 
     response.statusCode = entry.response.status;
-    var content = entry.response.content.text;
+    var content = entry.response.content.text || "";
     if (/^image\//.test(entry.response.content.mimeType)) {
         content = new Buffer(content, 'base64');
     } else {
-        content = content.replace("scproxy-stage.adobecc.com", "localhost:" + PORT);
-        content = content.replace("https://localhost", "http://localhost");
+        content = config.replace(content, request, entry);
+        content = content.replace(/https/g, "http");
     }
     response.end(content);
 });
 
 server.listen(PORT);
 console.log("Listening at http://localhost:" + PORT);
-console.log("Try http://localhost:" + PORT+ URL.parse(entries[0].request.url).path);
+console.log("Try " + entries[0].request.url.replace(/^https/, "http"));
 
 function indexHar(har) {
 
