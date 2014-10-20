@@ -1,0 +1,16 @@
+{
+  "name": "harmonica",
+  "version": "0.0.1",
+  "description": "Replay server responses from a HAR file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "har",
+    "proxy",
+    "replay"
+  ],
+  "author": "Stuart Knightley <stuart@stuartk.com>",
+  "license": "Proprietary"
+}
