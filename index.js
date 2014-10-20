@@ -2,21 +2,29 @@ var fs = require("fs");
 var http = require("http");
 var URL = require("url");
 var heuristic = require("./heuristic");
+var parseConfig = require("./parse-config");
 
 var PORT = "8080";
 
 var harPath = process.argv[2];
 var configPath = process.argv[3];
 var har = JSON.parse(fs.readFileSync(harPath));
-var config = require(configPath);
+var config = parseConfig(fs.readFileSync(configPath, "utf8"));
 var entries = har.log.entries;
 
 var server = http.createServer(function (request, response) {
+    // console.log(request.method, request.url);
     request.parsedUrl = URL.parse(request.url, true);
 
-
     var entry = heuristic(entries, request);
-    var where = config.where(request);
+
+    var where;
+    for (var i = 0; i < config.mappings.length; i++) {
+        if ((where = config.mappings[i](request.url))) {
+            break;
+        }
+    }
+
     var content;
     if (where) {
         // If there's local content, but no entry in the HAR, create a shim
@@ -86,8 +94,13 @@ var server = http.createServer(function (request, response) {
     } else {
         content = content || entry.response.content.text || "";
         content = content.toString();
-        content = config.replace(content, request, entry);
-        content = content.replace(/https/g, "http");
+        var context = {
+            request: request,
+            entry: entry
+        };
+        config.replacements.forEach(function (replacement) {
+            content = replacement(content, context);
+        });
     }
     response.end(content);
 });
