@@ -95,7 +95,3 @@ var server = http.createServer(function (request, response) {
 server.listen(PORT);
 console.log("Listening at http://localhost:" + PORT);
 console.log("Try " + entries[0].request.url.replace(/^https/, "http"));
-
-function indexHar(har) {
-
-}
