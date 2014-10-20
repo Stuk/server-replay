@@ -16,6 +16,30 @@ var server = http.createServer(function (request, response) {
 
 
     var entry = heuristic(entries, request);
+    var where = config.where(request);
+    var content;
+    if (where) {
+        // If there's local content, but no entry in the HAR, create a shim
+        // entry so that we can still serve the file
+        // TODO: infer MIME type (maybe just use a static file serving package)
+        if (!entry) {
+            entry = {
+                response: {
+                    status: 200,
+                    headers: [],
+                    content: {}
+                }
+            };
+        }
+        // If we have a file location, then try and read it. If that fails, then
+        // return a 404
+        try {
+            content = fs.readFileSync(where);
+        } catch (e) {
+            console.error("Could not read", where, "requested from", request.url);
+            entry = null;
+        }
+    }
 
     if (!entry) {
         console.log("Not found:", request.url);
@@ -53,10 +77,15 @@ var server = http.createServer(function (request, response) {
     }
 
     response.statusCode = entry.response.status;
-    var content = entry.response.content.text || "";
+    // We may already have content from a local file
     if (/^image\//.test(entry.response.content.mimeType)) {
-        content = new Buffer(content, 'base64');
+        if (!content) {
+            content = entry.response.content.text || "";
+            content = new Buffer(content, 'base64');
+        }
     } else {
+        content = content || entry.response.content.text || "";
+        content = content.toString();
         content = config.replace(content, request, entry);
         content = content.replace(/https/g, "http");
     }
