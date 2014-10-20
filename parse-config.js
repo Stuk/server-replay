@@ -10,7 +10,7 @@ module.exports = function (text) {
             var path = parseValue(mapping.path);
 
             return function (url) {
-                if (match.test(url)) {
+                if (url.search(match) !== -1) {
                     return url.replace(match, path);
                 }
             };
