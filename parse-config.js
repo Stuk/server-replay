@@ -57,6 +57,8 @@ function parseValue(value) {
             return function (context) {
                 return getPath(context, path);
             };
+        } else {
+            throw new Error("Unknown value: " + JSON.stringify(value));
         }
     } else {
         return value;
