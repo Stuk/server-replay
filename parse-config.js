@@ -60,7 +60,7 @@ function parseValue(value) {
 
 var headDotTail = /^([^\.]+)(\.(.*))?$/;
 function getPath(context, path) {
-    if (!context) {
+    if (!context || !path) {
         return undefined;
     }
 
