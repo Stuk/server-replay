@@ -31,24 +31,25 @@ Options:
 
 ### Getting a `.har` file
 
-The easiest way is with the Chrome DevTools. In the Network panel disable the cache, refresh the page and interact with the page to generate the network requests you want to capture. Then right click and select "Save as HAR with Content".
+The easiest way is with the Chrome DevTools. In the Network panel disable the cache, refresh the page and interact with the page to generate the network requests that you want to capture. Then right click and select "Save as HAR with Content".
 
 ![Creating a .har file](images/save-as-har.png)
 
 ### Browser proxy configuration
 
-* Chrome
+#### Chrome
 
-  Launch with the `--proxy-server` argument:
+Launch with the `--proxy-server` argument:
 
-  ```
-  /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server=127.0.0.1:8080
-  ```
+```
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server=127.0.0.1:8080
+```
 
-* Firefox
+#### Firefox
 
-  Preferences > Advanced > Network > Settings...
-  ![Firefox proxy settings](images/firefox-proxy.png)
+Preferences > Advanced > Network > Settings… > Manual proxy configuration
+
+![Firefox proxy settings](images/firefox-proxy.png)
 
 ## Configuration
 
