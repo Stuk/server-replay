@@ -57,8 +57,10 @@ function main(har, options) {
             var name = entry.response.headers[h].name;
             var value = entry.response.headers[h].value;
 
-            if (name.toLowerCase() == "content-length") continue;
-            if (name.toLowerCase() == "content-encoding") continue;
+            if (name.toLowerCase() === "content-length") continue;
+            if (name.toLowerCase() === "content-encoding") continue;
+            if (name.toLowerCase() === "cache-control") continue;
+            if (name.toLowerCase() === "pragma") continue;
 
             var existing = response.getHeader(name);
             if (existing) {
@@ -71,6 +73,10 @@ function main(har, options) {
                 response.setHeader(name, value);
             }
         }
+
+        // Try to make sure nothing is cached
+        response.setHeader("cache-control", "no-cache, no-store, must-revalidate");
+        response.setHeader("pragma", "no-cache");
 
         response.statusCode = entry.response.status;
         // We may already have content from a local file
