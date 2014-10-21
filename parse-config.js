@@ -40,6 +40,9 @@ module.exports = function (text) {
 
             return function (content, context) {
                 var _match = isMatchFn ? match(context) : match;
+                if (typeof _match === "string") {
+                    _match = new RegExp(escapeStringForRegExp(_match), "g");
+                }
                 var _replace = isReplaceFn ? replace(context) : replace;
                 return content.replace(_match, _replace);
             };
