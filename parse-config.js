@@ -17,7 +17,7 @@ module.exports = function (text) {
     }
 
     return {
-        mappings: config.mappings.map(function (mapping) {
+        mappings: (config.mappings || []).map(function (mapping) {
             var match = parseValue(mapping.match);
             var path = parseValue(mapping.path);
 
@@ -27,7 +27,7 @@ module.exports = function (text) {
                 }
             };
         }),
-        replacements: config.replacements.map(function (replacement) {
+        replacements: (config.replacements || []).map(function (replacement) {
             var match = parseValue(replacement.match);
             // by default `replace` doesn't globally replace plain strings,
             // so wrap it in a regex with the global flag set
