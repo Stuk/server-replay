@@ -53,14 +53,6 @@ function main(har, options) {
             return;
         }
 
-        // var cookieNames = request.headers.cookie.split(";").map(function (c) { return c.split("=")[0]; });
-        // entry.request.cookies.forEach(function (cookie) {
-        //     if (cookieNames.indexOf(cookie.name) === -1) {
-        //         // console.log("Missing cookie, in the console run:");
-        //         console.log("document.cookie = " + JSON.stringify(cookie.name + "=" + cookie.value));
-        //     }
-        // });
-
         for (var h = 0; h < entry.response.headers.length; h++) {
             var name = entry.response.headers[h].name;
             var value = entry.response.headers[h].value;
