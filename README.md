@@ -59,6 +59,29 @@ The config file is a JSON file (plus `//` comments) with the following propertie
 * `mappings` – Maps from URLs to file system paths. It is an array of `{match, path}` objects. `match` is a string or regex, and `path` is a string. `path` can contain `$n` references to substitute capture groups from `match`.
 * `replacements` – Replaces strings in the body of textual content. It is array of `{match, replacement}` objects. `match` is a string, regex or variable, and `replacement` is a string or variable. `replacement` can contain `$n` references to substitute capture groups from `match`.
 
+Full example:
+
+```json
+{
+    "version": 1,
+    "mappings": [
+        {
+            "match": {"regex": ".*\\/static\\/(.*)"},
+            "path": "/home/stuart/example/$1"
+        }
+    ],
+    "replacements": [
+        // For JSONP requests where callback name is randomly generated
+        {
+            "match": {"var": "entry.request.parsedUrl.query.callback"},
+            "replace": {"var": "request.parsedUrl.query.callback"}
+        },
+        // Proxy only works over http
+        {"match": "https", "replace": "http"}
+    ]
+}
+```
+
 ### Types
 
 The types mentioned above take the following forms:
