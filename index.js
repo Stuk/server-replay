@@ -4,13 +4,28 @@ var URL = require("url");
 var heuristic = require("./heuristic");
 var parseConfig = require("./parse-config");
 
-var PORT = "8080";
+var argv = require("yargs")
+    .usage("Usage: $0 [options] <.har file>")
+    .options({
+        c: {
+            alias: "config",
+            describe: "The config file to use"
+        },
+        p: {
+            alias: "port",
+            describe: "The port to run the proxy server on",
+            default: 8080
+        }
+    })
+    .demand(1)
+    .argv;
 
-var harPath = process.argv[2];
-var configPath = process.argv[3];
+var harPath = argv._[0];
 var har = JSON.parse(fs.readFileSync(harPath));
-var config = parseConfig(fs.readFileSync(configPath, "utf8"));
 var entries = har.log.entries;
+
+var configPath = argv.config;
+var config = parseConfig(configPath ? fs.readFileSync(configPath, "utf8") : null);
 
 var server = http.createServer(function (request, response) {
     // console.log(request.method, request.url);
@@ -105,6 +120,6 @@ var server = http.createServer(function (request, response) {
     response.end(content);
 });
 
-server.listen(PORT);
-console.log("Listening at http://localhost:" + PORT);
+server.listen(argv.port);
+console.log("Listening at http://localhost:" + argv.port);
 console.log("Try " + entries[0].request.url.replace(/^https/, "http"));

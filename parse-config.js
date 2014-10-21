@@ -1,4 +1,11 @@
 module.exports = function (text) {
+    if (!text) {
+        return {
+            mappings: [],
+            replacements: []
+        };
+    }
+
     var config = JSON.parse(text);
     if (config.version !== 1) {
         throw new Error("Unsupported config version: " + config.version);
