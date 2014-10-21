@@ -53,7 +53,7 @@ Preferences > Advanced > Network > Settings… > Manual proxy configuration
 
 ## Configuration
 
-The config file is a JSON file with the following properties:
+The config file is a JSON file (plus `//` comments) with the following properties:
 
 * `version` – currently `1`
 * `mappings` – Maps from URLs to file system paths. It is an array of `{match, path}` objects. `match` is a string or regex, and `path` is a string. `path` can contain `$n` references to substitute capture groups from `match`.

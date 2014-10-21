@@ -1,3 +1,5 @@
+var matchComment = /^\s*\/\/.*$/gm;
+
 module.exports = function (text) {
     if (!text) {
         return {
@@ -5,6 +7,9 @@ module.exports = function (text) {
             replacements: []
         };
     }
+
+    // Strip comments
+    text = text.replace(matchComment, "");
 
     var config = JSON.parse(text);
     if (config.version !== 1) {
