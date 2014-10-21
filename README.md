@@ -29,27 +29,7 @@ Options:
   -p, --port    The port to run the proxy server on  [default: 8080]
 ```
 
-### Getting a `.har` file
-
-The easiest way is with the Chrome DevTools. In the Network panel disable the cache, refresh the page and interact with the page to generate the network requests that you want to capture. Then right click and select "Save as HAR with Content".
-
-![Creating a .har file](images/save-as-har.png)
-
-### Browser proxy configuration
-
-#### Chrome
-
-Launch with the `--proxy-server` argument:
-
-```
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server=127.0.0.1:8080
-```
-
-#### Firefox
-
-Preferences > Advanced > Network > Settings… > Manual proxy configuration
-
-![Firefox proxy settings](images/firefox-proxy.png)
+See the [Setup section for details on creating `.har` file and using the proxy in your browser](#setup).
 
 ## Configuration
 
@@ -94,3 +74,31 @@ The types mentioned above take the following forms:
 
 * `request` – the [Node request object](http://nodejs.org/api/http.html#http_http_incomingmessage) with the addition of a `parsedUrl` property, containing the [parsed url](http://nodejs.org/api/url.html) and `query`.
 * `entry` – the [HAR entry](http://www.softwareishard.com/blog/har-12-spec/#entries) that is being used to respond to this request. It also has a `parsedUrl` property, and an `indexedHeaders` property which maps each header name to it's value(s).
+
+## Setup
+
+### Getting a `.har` file
+
+The easiest way is with the Chrome DevTools. In the Network panel disable the cache, refresh the page and interact with the page to generate the network requests that you want to capture. Then right click and select "Save as HAR with Content".
+
+![Creating a .har file](images/save-as-har.png)
+
+### Browser proxy configuration
+
+#### Chrome
+
+Launch with the `--proxy-server` argument:
+
+```
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server=127.0.0.1:8080
+```
+
+#### Firefox
+
+Preferences > Advanced > Network > Settings… > Manual proxy configuration
+
+![Firefox proxy settings](images/firefox-proxy.png)
+
+## License
+
+TBD. Currently proprietary.
