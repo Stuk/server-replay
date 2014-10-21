@@ -29,7 +29,7 @@ module.exports = function (text) {
         }),
         replacements: config.replacements.map(function (replacement) {
             var match = parseValue(replacement.match);
-            // by default `replace` doesn't globally replace plain string,
+            // by default `replace` doesn't globally replace plain strings,
             // so wrap it in a regex with the global flag set
             if (typeof match === "string") {
                 match = new RegExp(escapeStringForRegExp(match), "g");

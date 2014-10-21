@@ -9,7 +9,6 @@ function main(har, options) {
     var config = options.config;
 
     var server = http.createServer(function (request, response) {
-        // console.log(request.method, request.url);
         request.parsedUrl = URL.parse(request.url, true);
 
         var entry = heuristic(entries, request);
@@ -38,6 +37,7 @@ function main(har, options) {
             // If we have a file location, then try and read it. If that fails, then
             // return a 404
             try {
+                // TODO: do this asynchronously
                 content = fs.readFileSync(where);
             } catch (e) {
                 console.error("Could not read", where, "requested from", request.url);
@@ -47,9 +47,8 @@ function main(har, options) {
 
         if (!entry) {
             console.log("Not found:", request.url);
-            // console.log(request.headers);
             response.writeHead(404, "Not found", {"content-type": "text/plain"});
-            response.end("404 Not found");
+            response.end("404 Not found" + (where ? ", while looking for " + where : ""));
             return;
         }
 
