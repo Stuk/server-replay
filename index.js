@@ -42,7 +42,7 @@ function main(har, options) {
                 // TODO: do this asynchronously
                 content = fs.readFileSync(where);
             } catch (e) {
-                console.error("Could not read", where, "requested from", request.url);
+                console.error("Error: Could not read", where, "requested from", request.url);
                 entry = null;
             }
         }
@@ -97,6 +97,11 @@ function main(har, options) {
                 content = replacement(content, context);
             });
         }
+
+        if (entry.response.content.size > 0 && !content && !where) {
+            console.error("Error:", entry.request.url, "has a non-zero size, but there is no content in the HAR file");
+        }
+
         response.end(content);
     });
 
