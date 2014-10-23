@@ -5,8 +5,8 @@ var http = require("http");
 var URL = require("url");
 var heuristic = require("./heuristic");
 
-module.exports = main;
-function main(har, options) {
+module.exports = harmonica;
+function harmonica(har, options) {
     var entries = har.log.entries;
     var config = options.config;
     var debug = options.debug;
@@ -109,10 +109,10 @@ function main(har, options) {
         response.end(content);
     });
 
-    server.listen(argv.port);
+    server.listen(options.port);
 }
 
-if (require.main === module) {
+function main() {
     var parseConfig = require("./parse-config");
     var argv = require("yargs")
         .usage("Usage: $0 [options] <.har file>")
@@ -151,7 +151,7 @@ if (require.main === module) {
     }
     var config = parseConfig(configPath ? fs.readFileSync(configPath, "utf8") : null);
 
-    main(har, {
+    harmonica(har, {
         config: config,
         port: argv.port,
         debug: argv.debug
@@ -159,5 +159,8 @@ if (require.main === module) {
 
     console.log("Listening at http://localhost:" + argv.port);
     console.log("Try " + har.log.entries[0].request.url.replace(/^https/, "http"));
+}
 
+if (require.main === module) {
+    main();
 }
