@@ -139,6 +139,16 @@ if (require.main === module) {
     var har = JSON.parse(fs.readFileSync(harPath));
 
     var configPath = argv.config;
+    if (!configPath && fs.existsSync(".harmonica.json")) {
+        configPath = ".harmonica.json";
+    }
+    if (argv.debug) {
+        if (configPath) {
+            console.log("Using config file from", configPath);
+        } else {
+            console.log("No config file");
+        }
+    }
     var config = parseConfig(configPath ? fs.readFileSync(configPath, "utf8") : null);
 
     main(har, {
