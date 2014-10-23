@@ -9,8 +9,12 @@ module.exports = main;
 function main(har, options) {
     var entries = har.log.entries;
     var config = options.config;
+    var debug = options.debug;
 
     var server = http.createServer(function (request, response) {
+        if (debug) {
+            console.log(request.method, request.url);
+        }
         request.parsedUrl = URL.parse(request.url, true);
 
         var entry = heuristic(entries, request);
@@ -121,6 +125,11 @@ if (require.main === module) {
                 alias: "port",
                 describe: "The port to run the proxy server on",
                 default: 8080
+            },
+            d: {
+                alias: "debug",
+                describe: "Turn on debug logging",
+                boolean: true
             }
         })
         .demand(1)
@@ -134,7 +143,8 @@ if (require.main === module) {
 
     main(har, {
         config: config,
-        port: argv.port
+        port: argv.port,
+        debug: argv.debug
     });
 
     console.log("Listening at http://localhost:" + argv.port);
