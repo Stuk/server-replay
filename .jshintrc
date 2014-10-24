@@ -4,6 +4,7 @@
     "node": true,
 
     "globals": {
+        "jasmine": false,
         "describe": false,
         "beforeEach": false,
         "it": false,

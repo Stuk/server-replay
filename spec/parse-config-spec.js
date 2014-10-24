@@ -8,7 +8,7 @@ describe("readme", function () {
             "mappings": [
                 {
                     "match": {"regex": ".*\\/static\\/(.*)"},
-                    "path": "/home/stuart/example/$1"
+                    "path": "./public/$1"
                 }
             ],
             "replacements": [
@@ -28,8 +28,8 @@ describe("readme", function () {
             expect(config.mappings.length).toEqual(1);
             expect(typeof config.mappings[0]).toEqual("function");
             expect(config.mappings[0]("http://example.com/one/two")).toEqual(undefined);
-            expect(config.mappings[0]("http://example.com/static/one/two")).toEqual("/home/stuart/example/one/two");
-            expect(config.mappings[0]("http://example.com/something/static/one/two")).toEqual("/home/stuart/example/one/two");
+            expect(config.mappings[0]("http://example.com/static/one/two")).toEqual("./public/one/two");
+            expect(config.mappings[0]("http://example.com/something/static/one/two")).toEqual("./public/one/two");
         });
     });
 
