@@ -3,12 +3,14 @@
 var fs = require("fs");
 var http = require("http");
 var URL = require("url");
+var PATH = require("path");
 var heuristic = require("./heuristic");
 
 module.exports = harmonica;
 function harmonica(har, options) {
     var entries = har.log.entries;
     var config = options.config;
+    var resolvePath = options.resolvePath;
     var debug = options.debug;
 
     var server = http.createServer(function (request, response) {
@@ -22,6 +24,7 @@ function harmonica(har, options) {
         var where;
         for (var i = 0; i < config.mappings.length; i++) {
             if ((where = config.mappings[i](request.url))) {
+                where = PATH.resolve(resolvePath, where);
                 break;
             }
         }
@@ -153,6 +156,7 @@ function main() {
 
     harmonica(har, {
         config: config,
+        resolvePath: PATH.dirname(configPath),
         port: argv.port,
         debug: argv.debug
     });
