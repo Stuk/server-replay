@@ -11,15 +11,11 @@ Useful if…
 * …your development server is very slow and you want to go faster
 * …you are developing against an API with rate limits
 
-## Installation
-
-```
-npm install -g git@git.corp.adobe.com:knightle/harmonica.git
-```
-
 ## Running
 
 You need to have a `.har` file, run Harmonica, and then set up your browser to use it as a proxy.
+
+A `.harmonica.json` in the current directory is used by default if no config option is given.
 
 ```
 harmonica [options] <.har file>
@@ -27,6 +23,7 @@ harmonica [options] <.har file>
 Options:
   -c, --config  The config file to use
   -p, --port    The port to run the proxy server on  [default: 8080]
+  -d, --debug   Turn on debug logging
 ```
 
 See the [Setup section for details on creating `.har` file and using the proxy in your browser](#setup).
@@ -47,7 +44,7 @@ Full example:
     "mappings": [
         {
             "match": {"regex": ".*\\/static\\/(.*)"},
-            "path": "/home/stuart/example/$1"
+            "path": "./public/$1"
         }
     ],
     "replacements": [
