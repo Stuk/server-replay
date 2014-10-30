@@ -36,6 +36,9 @@ function rate(entryRequest, request) {
         return 0;
     }
 
+    // One point for matching above requirements
+    points += 1;
+
     // each query
     var entryQuery = entryRequest.parsedUrl.query;
     var requestQuery = request.parsedUrl.query;
