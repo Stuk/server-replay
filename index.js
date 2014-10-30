@@ -68,6 +68,19 @@ function makeRequestListener(entries, options) {
             return;
         }
 
+        // A resource can be blocked by the client recording the HAR file. Chrome
+        // adds an `_error` string property to the response object. Also try
+        // detecting missing status for other generators.
+        if (entry.response._error || !entry.response.status) {
+            var error = entry.response._error ? JSON.stringify(entry.response._error) : "Missing status";
+            response.writeHead(410, error, {"content-type": "text/plain"});
+            response.end(
+                "HAR response error: " + error +
+                "\n\nThis resource might have been blocked by the client recording the HAR file. For example, by the AdBlock or Ghostery extensions."
+            );
+            return;
+        }
+
         for (var h = 0; h < entry.response.headers.length; h++) {
             var name = entry.response.headers[h].name;
             var value = entry.response.headers[h].value;
