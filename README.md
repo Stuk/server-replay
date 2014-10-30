@@ -80,6 +80,8 @@ The easiest way is with the Chrome DevTools. In the Network panel disable the ca
 
 ![Creating a .har file](images/save-as-har.png)
 
+**Note:** Extensions such as AdBlock and Ghostery interfere with the recorded responses. Be aware of this and, if necessary, disable them before loading the page.
+
 ### Browser proxy configuration
 
 #### Chrome
