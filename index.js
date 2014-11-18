@@ -28,16 +28,15 @@ function makeRequestListener(entries, options) {
 
         var entry = heuristic(entries, request);
 
-        var where;
+        var localPath;
         for (var i = 0; i < config.mappings.length; i++) {
-            if ((where = config.mappings[i](request.url))) {
-                where = PATH.resolve(resolvePath, where);
+            if ((localPath = config.mappings[i](request.url))) {
+                localPath = PATH.resolve(resolvePath, localPath);
                 break;
             }
         }
 
-        var content;
-        if (where) {
+        if (localPath) {
             // If there's local content, but no entry in the HAR, create a shim
             // entry so that we can still serve the file
             // TODO: infer MIME type (maybe just use a static file serving package)
@@ -50,85 +49,127 @@ function makeRequestListener(entries, options) {
                     }
                 };
             }
+
             // If we have a file location, then try and read it. If that fails, then
             // return a 404
-            try {
-                // TODO: do this asynchronously
-                content = fs.readFileSync(where);
-            } catch (e) {
-                console.error("Error: Could not read", where, "requested from", request.url);
-                entry = null;
-            }
-        }
-
-        if (!entry) {
-            console.log("Not found:", request.url);
-            response.writeHead(404, "Not found", {"content-type": "text/plain"});
-            response.end("404 Not found" + (where ? ", while looking for " + where : ""));
-            return;
-        }
-
-        // A resource can be blocked by the client recording the HAR file. Chrome
-        // adds an `_error` string property to the response object. Also try
-        // detecting missing status for other generators.
-        if (entry.response._error || !entry.response.status) {
-            var error = entry.response._error ? JSON.stringify(entry.response._error) : "Missing status";
-            response.writeHead(410, error, {"content-type": "text/plain"});
-            response.end(
-                "HAR response error: " + error +
-                "\n\nThis resource might have been blocked by the client recording the HAR file. For example, by the AdBlock or Ghostery extensions."
-            );
-            return;
-        }
-
-        for (var h = 0; h < entry.response.headers.length; h++) {
-            var name = entry.response.headers[h].name;
-            var value = entry.response.headers[h].value;
-
-            if (name.toLowerCase() === "content-length") continue;
-            if (name.toLowerCase() === "content-encoding") continue;
-            if (name.toLowerCase() === "cache-control") continue;
-            if (name.toLowerCase() === "pragma") continue;
-
-            var existing = response.getHeader(name);
-            if (existing) {
-                if (Array.isArray(existing)) {
-                    response.setHeader(name, existing.concat(value));
-                } else {
-                    response.setHeader(name, [existing, value]);
+            fs.readFile(localPath, function (err, content) {
+                if (err) {
+                    console.error("Error: Could not read", localPath, "requested from", request.url);
+                    serveError(request.url, response, null, localPath);
+                    return;
                 }
-            } else {
-                response.setHeader(name, value);
+
+                entry.response.content.buffer = content;
+                serveEntry(request, response, entry, config);
+            });
+        } else {
+            if (!serveError(request.url, response, entry && entry.response)) {
+                serveEntry(request, response, entry, config);
             }
         }
 
-        // Try to make sure nothing is cached
-        response.setHeader("cache-control", "no-cache, no-store, must-revalidate");
-        response.setHeader("pragma", "no-cache");
+    };
+}
 
-        response.statusCode = entry.response.status;
-        // We may already have content from a local file
-        if (/^image\//.test(entry.response.content.mimeType)) {
-            if (!content) {
-                content = entry.response.content.text || "";
-                content = new Buffer(content, 'base64');
+function serveError(requestUrl, response, entryResponse, localPath) {
+    if (!entryResponse) {
+        console.log("Not found:", requestUrl);
+        response.writeHead(404, "Not found", {"content-type": "text/plain"});
+        response.end("404 Not found" + (localPath ? ", while looking for " + localPath : ""));
+        return true;
+    }
+
+    // A resource can be blocked by the client recording the HAR file. Chrome
+    // adds an `_error` string property to the response object. Also try
+    // detecting missing status for other generators.
+    if (entryResponse._error || !entryResponse.status) {
+        var error = entryResponse._error ? JSON.stringify(entryResponse._error) : "Missing status";
+        response.writeHead(410, error, {"content-type": "text/plain"});
+        response.end(
+            "HAR response error: " + error +
+            "\n\nThis resource might have been blocked by the client recording the HAR file. For example, by the AdBlock or Ghostery extensions."
+        );
+        return true;
+    }
+
+    return false;
+}
+
+function serveHeaders(response, entryResponse) {
+    // Not really a header, but...
+    response.statusCode = entryResponse.status;
+
+    for (var h = 0; h < entryResponse.headers.length; h++) {
+        var name = entryResponse.headers[h].name;
+        var value = entryResponse.headers[h].value;
+
+        if (name.toLowerCase() === "content-length") continue;
+        if (name.toLowerCase() === "content-encoding") continue;
+        if (name.toLowerCase() === "cache-control") continue;
+        if (name.toLowerCase() === "pragma") continue;
+
+        var existing = response.getHeader(name);
+        if (existing) {
+            if (Array.isArray(existing)) {
+                response.setHeader(name, existing.concat(value));
+            } else {
+                response.setHeader(name, [existing, value]);
             }
         } else {
-            content = content || entry.response.content.text || "";
-            content = content.toString();
-            var context = {
-                request: request,
-                entry: entry
-            };
-            config.replacements.forEach(function (replacement) {
-                content = replacement(content, context);
-            });
+            response.setHeader(name, value);
         }
+    }
 
-        if (entry.response.content.size > 0 && !content && !where) {
-            console.error("Error:", entry.request.url, "has a non-zero size, but there is no content in the HAR file");
+    // Try to make sure nothing is cached
+    response.setHeader("cache-control", "no-cache, no-store, must-revalidate");
+    response.setHeader("pragma", "no-cache");
+}
+
+function manipulateContent(request, entry, replacements) {
+    var entryResponse = entry.response;
+    var content;
+    if (isBinary(entryResponse)) {
+        content = entryResponse.content.buffer;
+    } else {
+        content = entryResponse.content.buffer.toString("utf8");
+        var context = {
+            request: request,
+            entry: entry
+        };
+        replacements.forEach(function (replacement) {
+            content = replacement(content, context);
+        });
+    }
+
+    if (entryResponse.content.size > 0 && !content) {
+        console.error("Error:", entry.request.url, "has a non-zero size, but there is no content in the HAR file");
+    }
+
+    return content;
+}
+
+function isBase64Encoded(entryResponse) {
+    var base64Size = entryResponse.content.size / 0.75;
+    var contentSize = entryResponse.content.text.length;
+    return contentSize && contentSize >= base64Size && contentSize <= base64Size + 4;
+}
+
+// FIXME
+function isBinary(entryResponse) {
+    return /^image\//.test(entryResponse.content.mimeType);
+}
+
+function serveEntry(request, response, entry, config) {
+    var entryResponse = entry.response;
+    serveHeaders(response, entryResponse);
+
+    if (!entryResponse.content.buffer) {
+        if (isBase64Encoded(entryResponse)) {
+            entryResponse.content.buffer = new Buffer(entryResponse.content.text || "", 'base64');
+        } else {
+            entryResponse.content.buffer= new Buffer(entryResponse.content.text || "", 'utf8');
         }
+    }
 
-        response.end(content);
-    };
+    response.end(manipulateContent(request, entry, config.replacements));
 }
