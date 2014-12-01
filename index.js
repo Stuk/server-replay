@@ -2,6 +2,7 @@ var _fs = require("fs");
 var http = require("http");
 var URL = require("url");
 var PATH = require("path");
+var mime = require("mime");
 var heuristic = require("./heuristic");
 
 exports = module.exports = harmonica;
@@ -39,12 +40,14 @@ function makeRequestListener(entries, options) {
         if (localPath) {
             // If there's local content, but no entry in the HAR, create a shim
             // entry so that we can still serve the file
-            // TODO: infer MIME type (maybe just use a static file serving package)
             if (!entry) {
                 entry = {
                     response: {
                         status: 200,
-                        headers: [],
+                        headers: [{
+                            name: 'Content-Type',
+                            value: mime.lookup(localPath)
+                        }],
                         content: {}
                     }
                 };
