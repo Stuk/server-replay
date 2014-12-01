@@ -41,14 +41,17 @@ function makeRequestListener(entries, options) {
             // If there's local content, but no entry in the HAR, create a shim
             // entry so that we can still serve the file
             if (!entry) {
+                var mimeType = mime.lookup(localPath);
                 entry = {
                     response: {
                         status: 200,
                         headers: [{
                             name: 'Content-Type',
-                            value: mime.lookup(localPath)
+                            value: mimeType
                         }],
-                        content: {}
+                        content: {
+                            mimeType: mimeType
+                        }
                     }
                 };
             }
@@ -170,7 +173,7 @@ function serveEntry(request, response, entry, config) {
         if (isBase64Encoded(entryResponse)) {
             entryResponse.content.buffer = new Buffer(entryResponse.content.text || "", 'base64');
         } else {
-            entryResponse.content.buffer= new Buffer(entryResponse.content.text || "", 'utf8');
+            entryResponse.content.buffer = new Buffer(entryResponse.content.text || "", 'utf8');
         }
     }
 
