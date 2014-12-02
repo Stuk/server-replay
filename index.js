@@ -155,6 +155,9 @@ function manipulateContent(request, entry, replacements) {
 }
 
 function isBase64Encoded(entryResponse) {
+    if (!entryResponse.content.text) {
+        return false;
+    }
     var base64Size = entryResponse.content.size / 0.75;
     var contentSize = entryResponse.content.text.length;
     return contentSize && contentSize >= base64Size && contentSize <= base64Size + 4;
