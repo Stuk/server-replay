@@ -1,3 +1,8 @@
+## v0.3.0, 2014-12-04
+
+*  Send correct Content-Type when resource is found locally, but not in the HAR file
+*  Handle HAR responses without content text
+
 ## v0.2.0, 2014-10-30
 
 * Correctly serve entries that match the method, host and path, but no query strings or headers, instead of serving a 404
