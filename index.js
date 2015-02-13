@@ -165,7 +165,7 @@ function isBase64Encoded(entryResponse) {
 
 // FIXME
 function isBinary(entryResponse) {
-    return /^image\//.test(entryResponse.content.mimeType);
+    return /^image\/|application\/octet-stream/.test(entryResponse.content.mimeType);
 }
 
 function serveEntry(request, response, entry, config) {
