@@ -9,6 +9,8 @@ Useful if…
 * …your development server is very slow and you want to go faster
 * …you are developing against an API with rate limits
 
+It works by starting a proxy server and serving content from a previously saved .har file overlayed with files from your local system, configurable with mappings.
+
 ## Installation
 
 ```
