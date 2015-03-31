@@ -22,5 +22,9 @@
     "replay"
   ],
   "author": "Stuart Knightley <stuart@stuartk.com>",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Stuk/server-replay.git"
+  }
 }
