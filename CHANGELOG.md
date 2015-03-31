@@ -1,3 +1,8 @@
+# v1.0.0, 2014-03-31
+
+* First public release
+* Load config file from `./.server-replay.json` and deprecate `./.harmonica.json`
+
 ## v0.3.0, 2014-12-04
 
 *  Send correct Content-Type when resource is found locally, but not in the HAR file
