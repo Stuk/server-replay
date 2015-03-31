@@ -1,13 +1,13 @@
 {
-  "name": "harmonica",
   "version": "0.3.0",
+  "name": "server-replay",
   "description": "Replay server responses from a HAR file",
   "main": "index.js",
   "scripts": {
     "test": "jasminum spec"
   },
   "bin": {
-    "harmonica": "./cli.js"
+    "server-replay": "./cli.js"
   },
   "dependencies": {
     "mime": "^1.2.11",

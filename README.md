@@ -1,7 +1,5 @@
-harmonica
-=========
-
-:warning: Still in earlish development. Not quite user-friendly yet :warning:
+server-replay
+=============
 
 Replay server responses from a HAR file.
 
@@ -11,14 +9,20 @@ Useful if…
 * …your development server is very slow and you want to go faster
 * …you are developing against an API with rate limits
 
-## Running
-
-You need to have a `.har` file, run Harmonica, and then set up your browser to use it as a proxy.
-
-A `.harmonica.json` in the current directory is used by default if no config option is given.
+## Installation
 
 ```
-harmonica [options] <.har file>
+npm install -g server-replay
+```
+
+## Running
+
+You need to have a `.har` file, run server-replay, and then set up your browser to use it as a proxy.
+
+A `.server-replay.json` in the current directory is used by default if no config option is given.
+
+```
+server-replay [options] <.har file>
 
 Options:
   -c, --config  The config file to use

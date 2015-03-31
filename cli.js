@@ -18,7 +18,7 @@
 
 var fs = require("fs");
 var PATH = require("path");
-var harmonica = require("./index");
+var serverReplay = require("./index");
 var parseConfig = require("./parse-config");
 
 var argv = require("yargs")
@@ -46,8 +46,13 @@ var harPath = argv._[0];
 var har = JSON.parse(fs.readFileSync(harPath));
 
 var configPath = argv.config;
-if (!configPath && fs.existsSync(".harmonica.json")) {
-    configPath = ".harmonica.json";
+if (!configPath) {
+    if (fs.existsSync(".server-replay.json")) {
+        configPath = ".server-replay.json";
+    } else if (fs.existsSync(".harmonica.json")) {
+        console.log(".harmonica.json is deprecated, use .server-replay.json instead");
+        configPath = ".harmonica.json";
+    }
 }
 if (argv.debug) {
     if (configPath) {
@@ -58,7 +63,7 @@ if (argv.debug) {
 }
 var config = parseConfig(configPath ? fs.readFileSync(configPath, "utf8") : null);
 
-harmonica(har, {
+serverReplay(har, {
     config: config,
     resolvePath: PATH.dirname(configPath),
     port: argv.port,

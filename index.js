@@ -21,8 +21,8 @@ var PATH = require("path");
 var mime = require("mime");
 var heuristic = require("./heuristic");
 
-exports = module.exports = harmonica;
-function harmonica(har, options) {
+exports = module.exports = serverReplay;
+function serverReplay(har, options) {
     var server = http.createServer(makeRequestListener(har.log.entries, options));
 
     server.listen(options.port);
