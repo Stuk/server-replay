@@ -1,7 +1,7 @@
 server-replay
 =============
 
-Replay server responses from a HAR file.
+Replay server responses from a [.har file](http://en.wikipedia.org/wiki/.har).
 
 Useful if…
 
