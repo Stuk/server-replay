@@ -44,7 +44,7 @@ The config file is a JSON file (plus `//` comments) with the following propertie
 
 Full example:
 
-```json
+```js
 {
     "version": 1,
     "mappings": [
