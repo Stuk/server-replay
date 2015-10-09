@@ -1,3 +1,9 @@
+# v1.1.0, 2014-10-09
+
+* Fix 304 redirects
+* Serve responses with a `null` host
+* Thanks to [@stdavis](https://github.com/stdavis) for these fixes!
+
 # v1.0.0, 2014-03-31
 
 * First public release
