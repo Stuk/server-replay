@@ -119,7 +119,7 @@ function serveError(requestUrl, response, entryResponse, localPath) {
 
 function serveHeaders(response, entryResponse) {
     // Not really a header, but...
-    response.statusCode = entryResponse.status;
+    response.statusCode = (entryResponse.status === 304) ? 200 : entryResponse.status;
 
     for (var h = 0; h < entryResponse.headers.length; h++) {
         var name = entryResponse.headers[h].name;

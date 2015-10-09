@@ -46,7 +46,7 @@ function rate(entryRequest, request) {
     // method, host and pathname must match
     if (
         entryRequest.method !== request.method ||
-        entryRequest.parsedUrl.host !== request.parsedUrl.host ||
+        (request.parsedUrl.host !== null && entryRequest.parsedUrl.host !== request.parsedUrl.host) ||
         entryRequest.parsedUrl.pathname !== request.parsedUrl.pathname
     ) {
         return 0;
