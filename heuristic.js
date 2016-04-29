@@ -60,11 +60,18 @@ function rate(entryRequest, request) {
     var requestQuery = request.parsedUrl.query;
     if (entryQuery && requestQuery) {
         for (name in requestQuery) {
-            if (entryQuery[name]) {
+            if (entryQuery[name] === undefined) {
+                points -= 0.5;
+            } else {
                 points += stripProtocol(entryQuery[name]) === stripProtocol(requestQuery[name]) ? 1 : 0;
             }
         }
-        // TODO handle missing query parameters and adjust score appropriately
+
+        for (name in entryQuery) {
+            if (requestQuery[name] === undefined) {
+                points -= 0.5;
+            }
+        }
     }
 
     // each header
