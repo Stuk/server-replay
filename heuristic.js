@@ -88,7 +88,11 @@ function rate(entryRequest, request) {
 }
 
 function stripProtocol(string) {
-    return string.replace(/^https?/, "");
+    if (typeof string === "string") {
+        return string.replace(/^https?/, "");
+    } else {
+        return string;
+    }
 }
 
 function indexHeaders(entryHeaders) {
